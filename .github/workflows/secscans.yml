@@ -1,0 +1,35 @@
+name: ITAS276-NodeGoat-CI-Part2
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  snyk-sca:
+    name: Snyk SCA Docker Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run Snyk Docker scan for vulnerabilities in the container image
+      - name: Run Snyk to check Docker image for vulnerabilities
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: g71singh/ITAS276-NodeGoat-gsingh:latest
+          args: --file=Dockerfile
+
+      - name: Save Snyk scan results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-sca.sarif
+          path: snyk.sarif
