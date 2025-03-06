@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,3 +32,50 @@ jobs:
     - name: Push Docker Image to Docker Hub
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/itas276-nodegoat-gsingh:latest
+
+
+  snyk-sca:
+    name: Snyk SCA Docker Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Run Snyk Docker scan for vulnerabilities in the container image
+      - name: Run Snyk to check Docker image for vulnerabilities
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: g71singh/ITAS276-NodeGoat-gsingh:latest
+          args: --file=Dockerfile
+
+      - name: Save Snyk scan results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-sca.sarif
+          path: snyk.sarif
+
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: semgrep ci --sarif > semgrep-results.sarif
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload Semgrep SARIF results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-scan-results
+          path: semgrep-results.sarif
+
