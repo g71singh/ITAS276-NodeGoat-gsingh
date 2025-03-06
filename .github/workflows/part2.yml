@@ -33,7 +33,7 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/itas276-nodegoat-gsingh:latest
   snyk-sca:
     name: Snyk SCA Docker Scan
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v4
