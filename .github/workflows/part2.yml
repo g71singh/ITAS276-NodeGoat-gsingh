@@ -33,7 +33,7 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/itas276-nodegoat-gsingh:latest
   snyk-sca:
     name: Snyk SCA Docker Scan
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: g71singh/ITAS276-NodeGoat-gsingh:latest
-          args: --file=Dockerfile
+          args: --file=Dockerfile --sarif snyk.sarif
 
       - name: Save Snyk scan results as artifact
         uses: actions/upload-artifact@v4
