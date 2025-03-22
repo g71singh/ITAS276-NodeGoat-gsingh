@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: snyk-sca.sarif
-          path: snyk.sarif
+          path: snyk.sarif --sarif=snyk.sarif
 
   semgrep:
     name: semgrep/ci
