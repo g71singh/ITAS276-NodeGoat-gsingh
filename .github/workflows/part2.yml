@@ -46,7 +46,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: g71singh/ITAS276-NodeGoat-gsingh:latest
-          args: --file=Dockerfile --sarif snyk.sarif
+          args: --file=Dockerfile 
 
       - name: Save Snyk scan results as artifact
         uses: actions/upload-artifact@v4
